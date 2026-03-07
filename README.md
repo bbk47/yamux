@@ -16,7 +16,7 @@ This library multiplexes many logical `Duplex` streams over a single underlying 
 ## Install
 
 ```bash
-pnpm add yamux-ts
+pnpm add @llmcode/yamux-ts
 ```
 
 ## Quick Start
@@ -25,7 +25,7 @@ pnpm add yamux-ts
 
 ```ts
 import net from "node:net";
-import { createClientSession } from "yamux-ts";
+import { createClientSession } from "@llmcode/yamux-ts";
 
 const socket = net.connect(9000, "127.0.0.1");
 
@@ -56,7 +56,7 @@ socket.once("connect", async () => {
 
 ```ts
 import net from "node:net";
-import { createServerSession } from "yamux-ts";
+import { createServerSession } from "@llmcode/yamux-ts";
 
 const server = net.createServer((socket) => {
   const session = createServerSession(socket);
