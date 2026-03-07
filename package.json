@@ -1,0 +1,40 @@
+{
+  "name": "vibe-yamux-ts",
+  "version": "1.0.0",
+  "description": "Yamux implementation for Node.js in TypeScript coding by Codex",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:interop": "vitest run test/interop",
+    "test:watch": "vitest"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "yamux",
+    "multiplex",
+    "stream"
+  ],
+  "author": "GPT-5.3-Codex",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.2",
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsdown": "^0.21.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
