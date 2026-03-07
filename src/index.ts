@@ -27,7 +27,13 @@ export {
     validateHeader,
 } from "./frame";
 
-export { YamuxSession, createClientSession, createServerSession } from "./session";
+export {
+    YamuxSession,
+    createClientSession,
+    createServerSession,
+    Client,
+    Server,
+} from "./session";
 export { YamuxStream } from "./stream";
 
 export type {
@@ -40,6 +46,7 @@ export type {
     SessionRole,
     StreamClosedEvent,
     StreamOpenEvent,
+    YamuxConfig,
     YamuxSessionOptions,
     YamuxStreamState,
 } from "./types";

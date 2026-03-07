@@ -11,13 +11,13 @@ Use a single transport (usually a `net.Socket`) and multiplex multiple logical s
 Imports:
 
 ```ts
-import { createClientSession, createServerSession, GoAwayCode } from "yamux-ts";
+import { Client, Server, GoAwayCode } from "@llmcode/yamux-ts";
 ```
 
 Client session:
 
 ```ts
-const session = createClientSession(socket, {
+const session = Client(socket, {
   initialStreamWindow: 256 * 1024,
   maxFrameSize: 64 * 1024,
 });
@@ -26,7 +26,13 @@ const session = createClientSession(socket, {
 Server session:
 
 ```ts
-const session = createServerSession(socket);
+const session = Server(socket);
+```
+
+Compatibility aliases are also available:
+
+```ts
+import { createClientSession, createServerSession } from "@llmcode/yamux-ts";
 ```
 
 ## Required Usage Pattern
@@ -49,12 +55,12 @@ const session = createServerSession(socket);
 
 ```ts
 import net from "node:net";
-import { createClientSession } from "yamux-ts";
+import { Client } from "@llmcode/yamux-ts";
 
 const socket = net.connect(9000, "127.0.0.1");
 await new Promise<void>((resolve) => socket.once("connect", () => resolve()));
 
-const session = createClientSession(socket);
+const session = Client(socket);
 session.on("error", console.error);
 
 const stream = session.openStream();
@@ -78,10 +84,10 @@ session.close();
 
 ```ts
 import net from "node:net";
-import { createServerSession } from "yamux-ts";
+import { Server } from "@llmcode/yamux-ts";
 
 const server = net.createServer((socket) => {
-  const session = createServerSession(socket);
+  const session = Server(socket);
   session.on("error", console.error);
 
   session.on("stream", (stream) => {

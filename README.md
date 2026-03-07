@@ -25,12 +25,12 @@ pnpm add @llmcode/yamux-ts
 
 ```ts
 import net from "node:net";
-import { createClientSession } from "@llmcode/yamux-ts";
+import { Client } from "@llmcode/yamux-ts";
 
 const socket = net.connect(9000, "127.0.0.1");
 
 socket.once("connect", async () => {
-  const session = createClientSession(socket);
+  const session = Client(socket);
 
   session.on("error", (err) => {
     console.error("session error", err);
@@ -56,10 +56,10 @@ socket.once("connect", async () => {
 
 ```ts
 import net from "node:net";
-import { createServerSession } from "@llmcode/yamux-ts";
+import { Server } from "@llmcode/yamux-ts";
 
 const server = net.createServer((socket) => {
-  const session = createServerSession(socket);
+  const session = Server(socket);
 
   session.on("stream", (stream) => {
     stream.on("data", (chunk) => {
@@ -87,17 +87,21 @@ server.listen(9000, "127.0.0.1");
 
 ## API
 
-### `createClientSession(transport, options?)`
+### `Client(transport, config?)`
 
 Create a Yamux session in client mode (outbound stream IDs are odd: `1, 3, 5...`).
 
-### `createServerSession(transport, options?)`
+### `Server(transport, config?)`
 
 Create a Yamux session in server mode (outbound stream IDs are even: `2, 4, 6...`).
 
+### `createClientSession(transport, options?)` and `createServerSession(transport, options?)`
+
+Compatibility aliases for users who prefer explicit factory names. They are functionally equivalent to `Client` and `Server`.
+
 ### `new YamuxSession(transport, options)`
 
-`options`:
+`options` / `config`:
 
 - `role: "client" | "server"` (required)
 - `initialStreamWindow?: number` default `256 * 1024`

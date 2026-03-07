@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createClientSession, createServerSession } from "../../src";
+import { Client, Server, createClientSession, createServerSession } from "../../src";
 import { onceEvent, createDuplexPair } from "../helpers/memory-duplex";
 
 describe("session", () => {
@@ -46,6 +46,26 @@ describe("session", () => {
 
         await new Promise((resolve) => setTimeout(resolve, 10));
         expect(() => client.openStream()).toThrow();
+
+        client.close();
+        server.close();
+    });
+
+    it("supports Go-style Client/Server constructors", async () => {
+        const { a, b } = createDuplexPair();
+        const client = Client(a);
+        const server = Server(b);
+
+        const inboundPromise = onceEvent<any>(server, "stream");
+        const outbound = client.openStream();
+        outbound.write(Buffer.from("go-style"));
+
+        const inbound = await inboundPromise;
+        const data = await onceEvent<Buffer>(inbound, "data");
+        expect(data.toString()).toBe("go-style");
+
+        outbound.end();
+        await onceEvent(inbound, "end");
 
         client.close();
         server.close();

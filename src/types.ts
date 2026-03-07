@@ -21,6 +21,9 @@ export interface YamuxSessionOptions {
     maxFrameSize?: number;
 }
 
+// Go-style naming compatibility: yamux.Client/Server accept a Config.
+export type YamuxConfig = Omit<YamuxSessionOptions, "role">;
+
 export interface OpenStreamOptions {
     signal?: AbortSignal;
 }

@@ -2,7 +2,7 @@
   "name": "@llmcode/yamux-ts",
   "author": "GPT-5.3-Codex",
   "license": "ISC",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Yamux implementation for Node.js in TypeScript coding by Codex",
   "repository": {
     "url": "https://github.com/wangcode/yamux-ts"

@@ -16,6 +16,7 @@ import type {
     PendingPing,
     PingResult,
     SessionRole,
+    YamuxConfig,
     YamuxSessionOptions,
 } from "./types";
 import { YamuxStream } from "./stream";
@@ -396,4 +397,14 @@ export function createServerSession(
         ...options,
         role: "server",
     });
+}
+
+// Go-style compatibility entrypoint.
+export function Client(transport: Duplex, config: YamuxConfig = {}): YamuxSession {
+    return createClientSession(transport, config);
+}
+
+// Go-style compatibility entrypoint.
+export function Server(transport: Duplex, config: YamuxConfig = {}): YamuxSession {
+    return createServerSession(transport, config);
 }
