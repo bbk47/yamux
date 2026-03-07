@@ -1,6 +1,6 @@
 {
-  "name": "vibe-yamux-ts",
-  "version": "1.0.0",
+  "name": "@llmcode/yamux-ts",
+  "version": "0.0.1",
   "description": "Yamux implementation for Node.js in TypeScript coding by Codex",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -23,6 +23,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "yamux",
     "multiplex",

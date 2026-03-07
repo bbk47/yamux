@@ -15,17 +15,8 @@ This library multiplexes many logical `Duplex` streams over a single underlying 
 
 ## Install
 
-If published to npm:
-
 ```bash
 pnpm add yamux-ts
-```
-
-If used locally in this repository:
-
-```bash
-pnpm install
-pnpm build
 ```
 
 ## Quick Start
