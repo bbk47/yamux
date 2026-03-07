@@ -1,7 +1,12 @@
 {
   "name": "@llmcode/yamux-ts",
+  "author": "GPT-5.3-Codex",
+  "license": "ISC",
   "version": "0.0.1",
   "description": "Yamux implementation for Node.js in TypeScript coding by Codex",
+  "repository": {
+    "url": "https://github.com/wangcode/yamux-ts"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -31,8 +36,6 @@
     "multiplex",
     "stream"
   ],
-  "author": "GPT-5.3-Codex",
-  "license": "ISC",
   "packageManager": "pnpm@10.30.2",
   "devDependencies": {
     "@types/node": "^24.5.2",
