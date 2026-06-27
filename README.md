@@ -1,8 +1,10 @@
-# yamux-ts
+# @bbk47/yamux
 
-TypeScript implementation of Yamux for Node.js.
+Production-hardened TypeScript implementation of Yamux for Node.js, interoperable with [`hashicorp/yamux`](https://github.com/hashicorp/yamux) (Go).
 
 This library multiplexes many logical `Duplex` streams over a single underlying transport (typically a TCP socket), following the Yamux framing and stream lifecycle rules.
+
+> **Fork.** This is a maintained fork of [`@llmcode/yamux-ts`](https://github.com/wangcode/yamux-ts) (`wangcode/yamux-ts`). See [Fork changes](#fork-changes) for what differs from upstream.
 
 ## Features
 
@@ -12,11 +14,26 @@ This library multiplexes many logical `Duplex` streams over a single underlying 
 - Session-level `Ping` and `GoAway`
 - Node.js `Duplex` API for each logical stream
 - Interop tests with `hashicorp/yamux` (Go)
+- **Robust against late/duplicate frames for closed streams** (does not tear down the whole session)
+
+## Fork changes
+
+Relative to `@llmcode/yamux-ts@0.0.2`:
+
+- **Unknown-stream frames no longer kill the session.** Previously a late or duplicate frame
+  (e.g. a trailing `WindowUpdate`/`FIN` for an already-closed stream) threw a fatal
+  `YamuxProtocolError`, which propagated to `GoAway(ProtocolError)` + `close()` and destroyed the
+  entire session and all its streams. This reliably broke any yamux **server** that opens one
+  stream per inbound connection (the 2nd connection died). It now mirrors `hashicorp/yamux`:
+  ignore the frame, and reply `RST` for non-teardown frames so the peer stops.
+- **Duplicate `SYN` for a known stream** resets only that stream instead of tearing down the session.
+- Regression tests added in `test/unit/session.test.ts` covering both cases.
 
 ## Install
 
 ```bash
-pnpm add @llmcode/yamux-ts
+npm install @bbk47/yamux
+# or: pnpm add @bbk47/yamux
 ```
 
 ## Quick Start
@@ -25,7 +42,7 @@ pnpm add @llmcode/yamux-ts
 
 ```ts
 import net from "node:net";
-import { Client } from "@llmcode/yamux-ts";
+import { Client } from "@bbk47/yamux";
 
 const socket = net.connect(9000, "127.0.0.1");
 
@@ -56,7 +73,7 @@ socket.once("connect", async () => {
 
 ```ts
 import net from "node:net";
-import { Server } from "@llmcode/yamux-ts";
+import { Server } from "@bbk47/yamux";
 
 const server = net.createServer((socket) => {
   const session = Server(socket);
@@ -153,7 +170,7 @@ Exported low-level helpers:
 - `YamuxClosedError`: operation on closed/goaway session
 - `YamuxStreamResetError`: stream reset (RST)
 
-On protocol violation, session sends `GoAway(ProtocolError)` and closes.
+On a genuine protocol violation (e.g. a malformed frame), the session sends `GoAway(ProtocolError)` and closes. Late/duplicate frames for unknown (already-closed) streams are **not** treated as violations — they are tolerated and answered with `RST`, matching `hashicorp/yamux`.
 
 ## Development
 

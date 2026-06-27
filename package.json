@@ -1,11 +1,19 @@
 {
-  "name": "@llmcode/yamux-ts",
-  "author": "GPT-5.3-Codex",
+  "name": "@bbk47/yamux",
+  "author": "bbk47",
+  "contributors": [
+    "GPT-5.3-Codex (original @llmcode/yamux-ts)"
+  ],
   "license": "ISC",
-  "version": "0.0.2",
-  "description": "Yamux implementation for Node.js in TypeScript coding by Codex",
+  "version": "0.1.0",
+  "description": "Production-hardened Yamux multiplexer for Node.js (TypeScript), interoperable with hashicorp/yamux. Fork of @llmcode/yamux-ts with the unknown-stream session-teardown fix.",
   "repository": {
-    "url": "https://github.com/wangcode/yamux-ts"
+    "type": "git",
+    "url": "git+https://github.com/bbk47/yamux.git"
+  },
+  "homepage": "https://github.com/bbk47/yamux#readme",
+  "bugs": {
+    "url": "https://github.com/bbk47/yamux/issues"
   },
   "type": "module",
   "main": "./dist/index.cjs",
@@ -23,7 +31,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:interop": "vitest run test/interop",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "tsdown"
   },
   "files": [
     "dist"

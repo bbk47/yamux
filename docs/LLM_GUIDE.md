@@ -1,6 +1,6 @@
-# LLM Guide for yamux-ts
+# LLM Guide for @bbk47/yamux
 
-This file is for code-generation agents that need to call `yamux-ts` correctly.
+This file is for code-generation agents that need to call `@bbk47/yamux` correctly.
 
 ## Goal
 
@@ -11,7 +11,7 @@ Use a single transport (usually a `net.Socket`) and multiplex multiple logical s
 Imports:
 
 ```ts
-import { Client, Server, GoAwayCode } from "@llmcode/yamux-ts";
+import { Client, Server, GoAwayCode } from "@bbk47/yamux";
 ```
 
 Client session:
@@ -32,7 +32,7 @@ const session = Server(socket);
 Compatibility aliases are also available:
 
 ```ts
-import { createClientSession, createServerSession } from "@llmcode/yamux-ts";
+import { createClientSession, createServerSession } from "@bbk47/yamux";
 ```
 
 ## Required Usage Pattern
@@ -55,7 +55,7 @@ import { createClientSession, createServerSession } from "@llmcode/yamux-ts";
 
 ```ts
 import net from "node:net";
-import { Client } from "@llmcode/yamux-ts";
+import { Client } from "@bbk47/yamux";
 
 const socket = net.connect(9000, "127.0.0.1");
 await new Promise<void>((resolve) => socket.once("connect", () => resolve()));
@@ -84,7 +84,7 @@ session.close();
 
 ```ts
 import net from "node:net";
-import { Server } from "@llmcode/yamux-ts";
+import { Server } from "@bbk47/yamux";
 
 const server = net.createServer((socket) => {
   const session = Server(socket);

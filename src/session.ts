@@ -195,14 +195,25 @@ export class YamuxSession extends EventEmitter {
 
         if (!stream) {
             if (!hasSyn) {
-                throw new YamuxProtocolError(`Received frame for unknown stream ${streamId} without SYN`);
+                // Tolerate late/duplicate frames for already-closed (unknown) streams instead of
+                // tearing down the whole session. Reply RST so the peer stops, mirroring
+                // hashicorp/yamux (which ignores frames for unknown streams and resets the peer).
+                if ((frame.header.flags & (FrameFlag.RST | FrameFlag.FIN)) === 0) {
+                    this.sendStreamReset(streamId);
+                }
+                return;
             }
 
             stream = this.createStream(streamId, false);
             this.emit("stream", stream);
             this.sendAck(streamId);
         } else if (hasSyn) {
-            throw new YamuxProtocolError(`Received duplicate SYN for stream ${streamId}`);
+            // A duplicate SYN for a known stream is a peer/stream-level fault. Reset just that
+            // stream rather than killing the entire session.
+            stream.onRemoteReset();
+            this.streams.delete(streamId);
+            this.sendStreamReset(streamId);
+            return;
         }
 
         if ((frame.header.flags & FrameFlag.ACK) !== 0) {
@@ -275,6 +286,23 @@ export class YamuxSession extends EventEmitter {
             nonce: frame.header.length,
             rttMs: Date.now() - pending.startedAt,
         });
+    }
+
+    private sendStreamReset(streamId: number): void {
+        try {
+            this.sendFrame({
+                header: {
+                    version: YAMUX_VERSION,
+                    type: FrameType.WindowUpdate,
+                    flags: FrameFlag.RST,
+                    streamId,
+                    length: 0,
+                },
+                payload: Buffer.alloc(0),
+            });
+        } catch {
+            // Ignore transport-side failures while signalling a reset for an unknown stream.
+        }
     }
 
     private sendAck(streamId: number): void {
