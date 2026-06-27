@@ -195,12 +195,14 @@ export class YamuxSession extends EventEmitter {
 
         if (!stream) {
             if (!hasSyn) {
-                // Tolerate late/duplicate frames for already-closed (unknown) streams instead of
-                // tearing down the whole session. Reply RST so the peer stops, mirroring
-                // hashicorp/yamux (which ignores frames for unknown streams and resets the peer).
-                if ((frame.header.flags & (FrameFlag.RST | FrameFlag.FIN)) === 0) {
-                    this.sendStreamReset(streamId);
-                }
+                // Frame for an unknown/already-closed stream. Crossing frames are inherent to
+                // multiplexing (e.g. a trailing WindowUpdate the peer emitted while still draining
+                // our earlier data, or a FIN that crosses ours). Silently ignore and keep the
+                // session alive, matching hashicorp/yamux which discards frames for missing streams.
+                //
+                // We deliberately do NOT reply RST here: after a clean both-FIN close we may have
+                // removed the stream while the peer's read side is still draining, and an RST would
+                // reset that still-valid half-open stream (possible truncation).
                 return;
             }
 
@@ -208,8 +210,9 @@ export class YamuxSession extends EventEmitter {
             this.emit("stream", stream);
             this.sendAck(streamId);
         } else if (hasSyn) {
-            // A duplicate SYN for a known stream is a peer/stream-level fault. Reset just that
-            // stream rather than killing the entire session.
+            // A duplicate SYN for an existing stream means stream-ID reuse / peer desync. Reset
+            // just that one stream (and tell the peer with RST) rather than tearing down the whole
+            // session, keeping every other multiplexed stream alive.
             stream.onRemoteReset();
             this.streams.delete(streamId);
             this.sendStreamReset(streamId);
